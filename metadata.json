@@ -1,0 +1,6 @@
+{
+  "name": "Kawira - Kawan Berwirausaha",
+  "description": "Platform mentoring sebaya dan pendamping usaha mahasiswa Indonesia dengan konsultasi mentor, pembukuan kas, kalkulator HPP/BEP, modul praktis, dan komunitas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

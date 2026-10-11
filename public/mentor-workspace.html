@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#202D3B">
+  <title>Workspace Mentor | KAWIRA - Kawan Berwirausaha</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./portal.css">
+  <!-- Load Socket.io Client -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Demo / Quick Role Navigation Bar -->
+  <div class="demo-banner">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="background: rgba(255,255,255,0.2); padding: 2px 7px; border-radius: 4px; font-weight: 800; font-size: 10px;">ROLE: MENTOR</span>
+      <span>Ruang Kerja Pendamping & Konsultasi Mentee Mahasiswa</span>
+    </div>
+    <div class="demo-banner-actions">
+      <a href="/" class="demo-pill">← Beranda Mahasiswa</a>
+      <a href="./mentor-workspace.html" class="demo-pill active">✦ Workspace Mentor</a>
+      <a href="./admin-dashboard.html" class="demo-pill">▦ Dashboard Admin</a>
+      <a href="./login-staff.html" class="demo-pill" id="btn-relogin">Ganti Akun</a>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">K</div>
+        <div class="brand-meta">
+          <h2>KAWIRA<span style="color:#5EEAD4;">.</span></h2>
+          <span class="sub">Mentor Workspace</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="mentees">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <span>Mentee Aktif</span>
+          <span class="nav-badge" id="badge-mentee-count">4</span>
+        </button>
+
+        <button class="nav-item" data-tab="livechat">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+          <span>Live Chat Mentoring</span>
+          <span class="nav-badge" style="background:#10B981;" id="badge-chat-online">Live</span>
+        </button>
+
+        <button class="nav-item" data-tab="feedbacks">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span>Catatan & Evaluasi</span>
+          <span class="nav-badge" id="badge-feedback-count">1</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card-sm">
+          <img id="sidebar-mentor-avatar" src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80" alt="Avatar Mentor">
+          <div class="user-info-text">
+            <div class="user-info-name" id="sidebar-mentor-name">Kak Aditya Ramadhan</div>
+            <div class="user-info-role">Mentor Praktisi P2MW</div>
+          </div>
+          <button class="btn-logout-icon" id="btn-logout" title="Keluar dari akun">
+            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <main class="main-wrapper">
+      <!-- Topbar -->
+      <header class="main-topbar">
+        <div class="page-title-group">
+          <h1 id="topbar-title">Dashboard Mentee Terhubung</h1>
+          <p id="topbar-subtitle">Pantau progres usaha mentee, jalankan konsultasi interaktif, dan berikan evaluasi terarah.</p>
+        </div>
+        <div class="topbar-actions">
+          <span class="badge badge-success">
+            <span class="dot online"></span> WebSocket Terhubung
+          </span>
+          <button class="btn btn-primary" id="btn-open-feedback-modal">
+            <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Beri Catatan Progres
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <div class="content-body">
+
+        <!-- Tab 1: Mentees & Live Chat Grid -->
+        <div class="mentor-grid">
+          
+          <!-- Left Column: Active Mentees List -->
+          <div class="panel-card" style="margin-bottom: 0;">
+            <div class="panel-card-header">
+              <div class="panel-card-title">
+                <svg style="width: 18px; height: 18px; color: var(--teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Daftar Mentee Terhubung</span>
+              </div>
+              <div class="search-input-wrap" style="min-width: 180px;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" id="mentee-search-input" placeholder="Cari nama atau usaha...">
+              </div>
+            </div>
+
+            <div class="panel-card-body" style="display: flex; flex-direction: column; gap: 14px;" id="mentees-container">
+              <!-- Dynamically populated mentee cards -->
+              <div style="text-align: center; padding: 24px; color: var(--text-muted);">Memuat daftar mentee...</div>
+            </div>
+          </div>
+
+          <!-- Right Column: Live Chat Panel -->
+          <div class="chat-box" id="live-chat-panel">
+            <div class="chat-header">
+              <div class="chat-recipient-info">
+                <img id="chat-active-avatar" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80" alt="Mentee">
+                <div>
+                  <div style="font-size: 13px; font-weight: 800; color: var(--navy); display: flex; align-items: center; gap: 6px;">
+                    <span id="chat-active-name">Farhan Pratama</span>
+                    <span class="dot online" id="chat-active-presence" title="Online"></span>
+                  </div>
+                  <div style="font-size: 11px; color: var(--teal-dark); font-weight: 600;" id="chat-active-business">Kopi Susu Kampus Seduh (F&B)</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <button class="btn btn-secondary btn-sm" id="btn-end-session-summary" title="Akhiri sesi dan simpan rangkuman">
+                  Akhiri Sesi
+                </button>
+              </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="chat-messages-area" id="chat-messages-list">
+              <!-- Chat bubbles rendered dynamically -->
+            </div>
+
+            <!-- Quick Prompt Suggestions for Mentor -->
+            <div class="quick-prompts">
+              <span class="prompt-chip" data-prompt="Bagaimana rincian Food Cost dan margin HPP produkmu saat ini?">✦ Rincian HPP</span>
+              <span class="prompt-chip" data-prompt="Sudahkah kamu menghitung titik impas BEP (unit per bulan)?">✦ Hitung BEP</span>
+              <span class="prompt-chip" data-prompt="Bagaimana respons tester atau pembeli pertama terhadap kemasan?">✦ Validasi Pasar</span>
+              <span class="prompt-chip" data-prompt="Hebat! Lanjutkan input pencatatan kas di fitur Pembukuan Kawira ya.">✦ Catat Pembukuan</span>
+            </div>
+
+            <!-- Input Bar -->
+            <form class="chat-input-bar" id="chat-send-form">
+              <input type="text" id="chat-message-input" placeholder="Tuliskan saran atau panduan ke mentee..." autocomplete="off" required>
+              <button type="submit" class="btn btn-primary" id="btn-chat-submit">
+                <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                Kirim
+              </button>
+            </form>
+          </div>
+
+        </div>
+
+        <!-- Section: Feedback & Evaluation History -->
+        <div class="panel-card" style="margin-top: 24px;" id="section-feedback-history">
+          <div class="panel-card-header">
+            <div class="panel-card-title">
+              <svg style="width: 18px; height: 18px; color: var(--teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+              <span>Riwayat Catatan & Rekomendasi Mentoring</span>
+            </div>
+            <span style="font-size: 11px; color: var(--text-muted);" id="feedback-summary-count">1 catatan tersimpan</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Mentee & Usaha</th>
+                  <th>Topik Sesi</th>
+                  <th>Catatan Progres</th>
+                  <th>Action Items (Rekomendasi)</th>
+                  <th>Skor Kesiapan</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="feedback-table-body">
+                <!-- Dynamically filled feedback rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Form Feedback Mentoring -->
+  <div class="modal-overlay" id="feedback-modal" hidden>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Beri Catatan & Evaluasi Mentee</h3>
+        <button class="modal-close-btn" id="modal-feedback-close">✕</button>
+      </div>
+      <form id="feedback-form">
+        <div class="modal-body">
+          <div class="form-field">
+            <label for="fb-mentee-select">Pilih Mentee</label>
+            <select id="fb-mentee-select" required>
+              <!-- Options populated dynamically -->
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="fb-topic-input">Topik Konsultasi</label>
+            <input type="text" id="fb-topic-input" placeholder="Misal: Penentuan HPP & Optimasi Supplier Kemasan" required>
+          </div>
+
+          <div class="form-field">
+            <label for="fb-notes-input">Catatan Progres Usaha Mentee</label>
+            <textarea id="fb-notes-input" rows="3" placeholder="Jelaskan progres bisnis yang telah dicapai mentee dan kendala utama..." required></textarea>
+          </div>
+
+          <div class="form-field">
+            <label for="fb-action-input">Action Items / Rekomendasi Tindak Lanjut</label>
+            <textarea id="fb-action-input" rows="2" placeholder="1. Buat tabel biaya bahan baku. 2. Hubungi supplier untuk diskon volume..." required></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-field">
+              <label for="fb-score-select">Skor Kesiapan (1-5)</label>
+              <select id="fb-score-select">
+                <option value="5">★★★★★ (5/5) Sangat Siap</option>
+                <option value="4" selected>★★★★☆ (4/5) Siap dengan Catatan</option>
+                <option value="3">★★★☆☆ (3/5) Butuh Perbaikan</option>
+                <option value="2">★★☆☆☆ (2/5) Tahap Awal</option>
+                <option value="1">★☆☆☆☆ (1/5) Perlu Pendampingan Intensif</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="fb-status-select">Status Kelanjutan</label>
+              <select id="fb-status-select">
+                <option value="Selesai & Target Tercapai">Selesai & Target Tercapai</option>
+                <option value="Follow-up Dijadwalkan">Follow-up Dijadwalkan</option>
+                <option value="Tugas Mandiri Mentee">Tugas Mandiri Mentee</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-feedback-cancel">Batal</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-feedback">Simpan Evaluasi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Client Script -->
+  <script src="./mentor.js"></script>
+</body>
+</html>
